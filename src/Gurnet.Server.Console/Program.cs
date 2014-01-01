@@ -10,6 +10,7 @@ namespace Gurnet.Server
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             Console.WriteLine("Starting server...");
@@ -67,6 +68,7 @@ namespace Gurnet.Server
                             Console.WriteLine("Unhandled type: " + inMsg.MessageType + " " + inMsg.LengthBytes + " bytes " + inMsg.DeliveryMethod + "|" + inMsg.SequenceChannel);
                             break;
                     }
+                    server.Recycle(inMsg);
                 }
 
                 Thread.Sleep(1);
