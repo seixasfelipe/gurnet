@@ -26,23 +26,27 @@ namespace Gurnet.Client
             string input;
             while (!(input = Console.ReadLine()).Equals("quit", StringComparison.InvariantCultureIgnoreCase))
             {
+#if DEBUG
                 Console.WriteLine("[debug]{0}", input);
-
+#endif
                 if (input.Equals("connect", StringComparison.InvariantCultureIgnoreCase)
                     && client.ConnectionStatus == NetConnectionStatus.Disconnected)
                 {
                     client.Start();
                     NetOutgoingMessage hailMsg = client.CreateMessage("Hail server");
                     client.Connect("localhost", 14242, hailMsg);
-
+#if DEBUG
                     Console.WriteLine("[debug]connecting...");
+#endif
                 }
                 else
                 {
                     NetOutgoingMessage outMsg = client.CreateMessage(input);
                     client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered);
                     client.FlushSendQueue();
+#if DEBUG
                     Console.WriteLine("[debug]sending msg [{0}]", input);
+#endif
                 }
             }
 
