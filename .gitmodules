@@ -1,0 +1,3 @@
+[submodule "lib/lidgren"]
+        path = lib/lidgren
+        url = https://github.com/fraga/lidgren.git
