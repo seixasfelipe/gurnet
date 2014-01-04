@@ -18,5 +18,10 @@ namespace Gurnet.Core
             this.Id = uniqueId;
             this.Position = new Position();
         }
+
+        public void MoveTo(Position newPosition)
+        {
+            this.Position = newPosition;
+        }
     }
 }

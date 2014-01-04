@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Gurnet.Core;
+using System.Collections.Generic;
 
 namespace Test.Gurnet.Core
 {
@@ -13,7 +14,11 @@ namespace Test.Gurnet.Core
         [TestInitialize]
         public void BeforeEach()
         {
-            this.scenario = new Scenario(10, 10);
+            var respawnPositions = new List<Position>() { 
+                new Position() { X = 1, Y = 1 }, 
+                new Position() { X = 8, Y = 8 }
+            };
+            this.scenario = new Scenario(10, 10, respawnPositions);
             this.game = new Game();
 
             game.AddPlayer("john");
@@ -86,8 +91,9 @@ namespace Test.Gurnet.Core
             var p1 = players[0];
             var p2 = players[1];
 
-            Assert.IsTrue(game.Scenario.IsPositionValid(p1.Position));
-            Assert.IsTrue(game.Scenario.IsPositionValid(p2.Position));
+            Assert.IsTrue(game.IsRunning);
+            Assert.IsTrue(p1.Position.Equals(new Position() { X = 1, Y = 1 }));
+            Assert.IsTrue(p2.Position.Equals(new Position() { X = 8, Y = 8 }));
         }
     }
 }

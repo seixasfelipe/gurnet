@@ -61,11 +61,12 @@ namespace Gurnet.Core
 
         private bool PlacePlayers()
         {
-            //var players = this.GetPlayers();
-            //for (var i = 0; i < players.Count; i++)
-            //{
-            //    players[i].MoveTo(i, i);
-            //}
+            var players = this.GetPlayers();
+            foreach (var p in players)
+            {
+                p.MoveTo(this.Scenario.GetNextRespawnPosition());
+            }
+
             return true;
         }
 

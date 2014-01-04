@@ -16,5 +16,12 @@ namespace Gurnet.Core
             this.X = -1;
             this.Y = -1;
         }
+
+        public override bool Equals(object obj)
+        {
+            return obj != null && obj.GetType() == this.GetType() 
+                && ((Position)obj).X == this.X 
+                && ((Position)obj).Y == this.Y;
+        }
     }
 }
