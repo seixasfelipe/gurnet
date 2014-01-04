@@ -23,5 +23,10 @@ namespace Gurnet.Core
                 && ((Position)obj).X == this.X 
                 && ((Position)obj).Y == this.Y;
         }
+
+        public override int GetHashCode()
+        {
+            return (this.X * 251) + this.Y;
+        }
     }
 }
