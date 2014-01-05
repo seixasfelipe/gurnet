@@ -20,7 +20,7 @@ namespace Test.Gurnet.Core
             };
             this.scenario = new Scenario(10, 10, respawnPositions);
             this.game = new Game();
-
+            game.SetScenario(scenario);
             game.AddPlayer("john");
             game.AddPlayer("moe");
         }
@@ -55,7 +55,7 @@ namespace Test.Gurnet.Core
 
             game.Start();
 
-            Assert.IsFalse(game.IsRunning);
+            Assert.IsTrue(game.IsRunning);
         }
 
         [TestMethod]
@@ -73,12 +73,12 @@ namespace Test.Gurnet.Core
         public void TestStartGameWithoutAScenario()
         {
             game.Start();
-            Assert.IsFalse(game.IsRunning);
+            Assert.IsTrue(game.IsRunning);
 
-            game.SetScenario(this.scenario);
+            game.SetScenario(null);
             game.Start();
 
-            Assert.IsTrue(game.IsRunning);
+            Assert.IsFalse(game.IsRunning);
         }
 
         [TestMethod]
