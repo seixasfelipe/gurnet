@@ -73,12 +73,12 @@ namespace Test.Gurnet.Core
         public void TestStartGameWithoutAScenario()
         {
             game.Start();
-            Assert.IsFalse(game.IsRunning);
+            Assert.IsTrue(game.IsRunning);
 
-            game.SetScenario(this.scenario);
+            game.SetScenario(null);
             game.Start();
 
-            Assert.IsTrue(game.IsRunning);
+            Assert.IsFalse(game.IsRunning);
         }
 
         [TestMethod]
