@@ -1,4 +1,4 @@
-﻿using Lidgren.Network;
+﻿using Gurnet.Core.Log;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,66 +13,71 @@ namespace Gurnet.Server
         [STAThread]
         static void Main(string[] args)
         {
-            Console.WriteLine("Starting server...");
+            string name = "gurnet";
+            int port = 14242;
+            ILogger logger = new ConsoleLogger();
+            GurnetServer server = new GurnetServer(name, port, logger);
 
-            var config = new NetPeerConfiguration("gurnet");
-            config.Port = 14242;
-
-            var server = new NetServer(config);
             server.Start();
 
-            ConsoleKeyInfo key;
-            while(true) 
-            {
-                if (Console.KeyAvailable)
-                {
-                    key = Console.ReadKey(true);
-                    if (key.Key == ConsoleKey.Q)
-                    {
-                        server.Shutdown("Shutdown requested by user");
-                        break;
-                    }
-                }
+            //var config = new NetPeerConfiguration("gurnet");
+            //config.Port = 14242;
 
-                NetIncomingMessage inMsg;
-                string text;
-                while ((inMsg = server.ReadMessage()) != null)
-                {
-                    // handle incoming message
-                    switch (inMsg.MessageType)
-                    {
-                        case NetIncomingMessageType.DebugMessage:
-                        case NetIncomingMessageType.ErrorMessage:
-                        case NetIncomingMessageType.WarningMessage:
-                        case NetIncomingMessageType.VerboseDebugMessage:
-                            text = inMsg.ReadString();
-                            Console.WriteLine(text);
-                            break;
-                        case NetIncomingMessageType.StatusChanged:
-                            NetConnectionStatus status = (NetConnectionStatus)inMsg.ReadByte();
-							string reason = inMsg.ReadString();
-							Console.WriteLine(NetUtility.ToHexString(inMsg.SenderConnection.RemoteUniqueIdentifier) + " " + status + ": " + reason);
-                            break;
-                        case NetIncomingMessageType.Data:
-                            text = string.Format("{0} said: {1}", NetUtility.ToHexString(inMsg.SenderConnection.RemoteUniqueIdentifier), inMsg.ReadString());
-                            Console.WriteLine(text);
+            //var server = new NetServer(config);
+            //server.Start();
 
-                            foreach (var con in server.Connections)
-                            {
-                                var outMsg = server.CreateMessage(text);
-                                con.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
-                            }
+            //ConsoleKeyInfo key;
+            //while(true) 
+            //{
+            //    if (Console.KeyAvailable)
+            //    {
+            //        key = Console.ReadKey(true);
+            //        if (key.Key == ConsoleKey.Q)
+            //        {
+            //            server.Shutdown("Shutdown requested by user");
+            //            break;
+            //        }
+            //    }
 
-                            break;
-                        default:
-                            Console.WriteLine("Unhandled type: " + inMsg.MessageType + " " + inMsg.LengthBytes + " bytes " + inMsg.DeliveryMethod + "|" + inMsg.SequenceChannel);
-                            break;
-                    }
-                    server.Recycle(inMsg);
-                }
+            //    NetIncomingMessage inMsg;
+            //    string text;
+            //    while ((inMsg = server.ReadMessage()) != null)
+            //    {
+            //        // handle incoming message
+            //        switch (inMsg.MessageType)
+            //        {
+            //            case NetIncomingMessageType.DebugMessage:
+            //            case NetIncomingMessageType.ErrorMessage:
+            //            case NetIncomingMessageType.WarningMessage:
+            //            case NetIncomingMessageType.VerboseDebugMessage:
+            //                text = inMsg.ReadString();
+            //                Console.WriteLine(text);
+            //                break;
+            //            case NetIncomingMessageType.StatusChanged:
+            //                NetConnectionStatus status = (NetConnectionStatus)inMsg.ReadByte();
+            //                string reason = inMsg.ReadString();
+            //                Console.WriteLine(NetUtility.ToHexString(inMsg.SenderConnection.RemoteUniqueIdentifier) + " " + status + ": " + reason);
+            //                break;
+            //            case NetIncomingMessageType.Data:
+            //                text = string.Format("{0} said: {1}", NetUtility.ToHexString(inMsg.SenderConnection.RemoteUniqueIdentifier), inMsg.ReadString());
+            //                Console.WriteLine(text);
 
-                Thread.Sleep(1);
-            }
+            //                foreach (var con in server.Connections)
+            //                {
+            //                    var outMsg = server.CreateMessage(text);
+            //                    con.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
+            //                }
+
+            //                break;
+            //            default:
+            //                Console.WriteLine("Unhandled type: " + inMsg.MessageType + " " + inMsg.LengthBytes + " bytes " + inMsg.DeliveryMethod + "|" + inMsg.SequenceChannel);
+            //                break;
+            //        }
+            //        server.Recycle(inMsg);
+            //    }
+
+            //    Thread.Sleep(1);
+            //}
         }
     }
 }

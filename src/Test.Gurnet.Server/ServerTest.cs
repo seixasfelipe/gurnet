@@ -12,10 +12,10 @@ namespace Test.Gurnet.Server
         [TestMethod]
         public void TestServerStarts()
         {
-            string host = "localhost";
+            string name = "gurnet";
             int port = 14242;
             ILogger logger = new ConsoleLogger();
-            GurnetServer server = new GurnetServer(host, port, logger);
+            GurnetServer server = new GurnetServer(name, port, logger);
 
             server.Start();
             Assert.AreEqual(StatusEnum.Running, server.Status);
