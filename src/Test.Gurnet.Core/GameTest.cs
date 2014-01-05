@@ -55,7 +55,7 @@ namespace Test.Gurnet.Core
 
             game.Start();
 
-            Assert.IsFalse(game.IsRunning);
+            Assert.IsTrue(game.IsRunning);
         }
 
         [TestMethod]
