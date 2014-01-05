@@ -20,7 +20,7 @@ namespace Test.Gurnet.Core
             };
             this.scenario = new Scenario(10, 10, respawnPositions);
             this.game = new Game();
-
+            game.SetScenario(scenario);
             game.AddPlayer("john");
             game.AddPlayer("moe");
         }
