@@ -44,17 +44,12 @@ namespace Gurnet.Core
         {
             this.IsRunning = false;
 
-            if (this.GetPlayers().Count < 2
-                || this.Scenario == null)
+            if (Scenario == null)
             {
                 return;
             }
 
             var playersPositioned = this.PlacePlayers();
-            if (!playersPositioned)
-            {
-                return;
-            }
 
             this.IsRunning = true;
         }
