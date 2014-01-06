@@ -17,8 +17,10 @@ namespace Gurnet.Server
             int port = 14242;
             ILogger logger = new ConsoleLogger();
             GurnetServer server = new GurnetServer(name, port, logger);
-
             server.Start();
+
+            while (!Console.KeyAvailable || Console.ReadKey().Key != ConsoleKey.Escape)
+                Thread.Sleep(500);
         }
     }
 }

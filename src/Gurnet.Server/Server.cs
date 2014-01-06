@@ -1,4 +1,5 @@
-﻿using Gurnet.Core.Log;
+﻿using Gurnet.Core;
+using Gurnet.Core.Log;
 using Gurnet.Server.Enums;
 using Lidgren.Network;
 using System;
@@ -15,7 +16,8 @@ namespace Gurnet.Server
         private string serverName;
         private int port;
         private ILogger logger;
-        private Thread serverInstance;
+        private Thread gameThread;
+        private Game game;
 
         public StatusEnum Status { get; private set; }
 
@@ -24,80 +26,75 @@ namespace Gurnet.Server
             this.serverName = serverName;
             this.port = port;
             this.logger = logger;
+
+            if (SynchronizationContext.Current == null)
+            {
+                SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
+            }   
         }
 
         public void Start()
         {
-            this.serverInstance = new Thread(RunServer);
+            this.logger.Log("Starting server...");
 
-            var param = new {
-                serverName = this.serverName, 
-                port = this.port, 
-                logger = this.logger 
-            };
-            this.serverInstance.Start(param);
-        }
-
-        private void RunServer(dynamic param)
-        {
-            param.logger.Log("Starting server...");
-
-            var peerConfig = new NetPeerConfiguration(param.serverName);
-            peerConfig.Port = param.port;
+            var peerConfig = new NetPeerConfiguration(this.serverName);
+            peerConfig.Port = this.port;
 
             var server = new NetServer(peerConfig);
+            server.RegisterReceivedCallback(new SendOrPostCallback(HandleIncomingMessages));
             server.Start();
 
-            while(server.Status != NetPeerStatus.Running) 
-            {
-                Thread.Sleep(10);
-            }
-
-            param.logger.Log("Server is running...");
+            this.logger.Log("Server is running...");
 
             this.Status = StatusEnum.Running;
 
-            while (true)
+            this.gameThread = new Thread(new ThreadStart(RunGame));
+            this.gameThread.Start();
+            Thread.Sleep(500);
+        }
+
+        private void RunGame()
+        {
+            //this.game.Start();
+        }
+
+        private void HandleIncomingMessages(object state)
+        {
+            NetIncomingMessage inMsg;
+            NetServer server = (NetServer)state;
+            if ((inMsg = server.ReadMessage()) == null) return;
+
+            string text;
+            switch (inMsg.MessageType)
             {
-                NetIncomingMessage inMsg;
-                string text;
-                while ((inMsg = server.ReadMessage()) != null)
-                {
-                    // handle incoming message
-                    switch (inMsg.MessageType)
+                case NetIncomingMessageType.DebugMessage:
+                case NetIncomingMessageType.ErrorMessage:
+                case NetIncomingMessageType.WarningMessage:
+                case NetIncomingMessageType.VerboseDebugMessage:
+                    text = inMsg.ReadString();
+                    this.logger.Log(text);
+                    break;
+                case NetIncomingMessageType.StatusChanged:
+                    NetConnectionStatus status = (NetConnectionStatus)inMsg.ReadByte();
+                    string reason = inMsg.ReadString();
+                    this.logger.Log(NetUtility.ToHexString(inMsg.SenderConnection.RemoteUniqueIdentifier) + " " + status + ": " + reason);
+                    break;
+                case NetIncomingMessageType.Data:
+                    text = string.Format("{0} said: {1}", NetUtility.ToHexString(inMsg.SenderConnection.RemoteUniqueIdentifier), inMsg.ReadString());
+                    this.logger.Log(text);
+
+                    foreach (var con in server.Connections)
                     {
-                        case NetIncomingMessageType.DebugMessage:
-                        case NetIncomingMessageType.ErrorMessage:
-                        case NetIncomingMessageType.WarningMessage:
-                        case NetIncomingMessageType.VerboseDebugMessage:
-                            text = inMsg.ReadString();
-                            param.logger.Log(text);
-                            break;
-                        case NetIncomingMessageType.StatusChanged:
-                            NetConnectionStatus status = (NetConnectionStatus)inMsg.ReadByte();
-                            string reason = inMsg.ReadString();
-                            param.logger.Log(NetUtility.ToHexString(inMsg.SenderConnection.RemoteUniqueIdentifier) + " " + status + ": " + reason);
-                            break;
-                        case NetIncomingMessageType.Data:
-                            text = string.Format("{0} said: {1}", NetUtility.ToHexString(inMsg.SenderConnection.RemoteUniqueIdentifier), inMsg.ReadString());
-                            param.logger.Log(text);
-
-                            foreach (var con in server.Connections)
-                            {
-                                var outMsg = server.CreateMessage(text);
-                                con.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
-                            }
-
-                            break;
-                        default:
-                            param.logger.Log("Unhandled type: " + inMsg.MessageType + " " + inMsg.LengthBytes + " bytes " + inMsg.DeliveryMethod + "|" + inMsg.SequenceChannel);
-                            break;
+                        var outMsg = server.CreateMessage(text);
+                        con.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered, 0);
                     }
-                    server.Recycle(inMsg);
-                }
 
-                Thread.Sleep(1);
+                    break;
+                default:
+                    this.logger.Log("Unhandled type: " + inMsg.MessageType + " " + inMsg.LengthBytes + " bytes " + inMsg.DeliveryMethod + "|" + inMsg.SequenceChannel);
+                    break;
             }
+            server.Recycle(inMsg);
         }
     }
 }
