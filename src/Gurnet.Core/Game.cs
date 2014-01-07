@@ -49,12 +49,12 @@ namespace Gurnet.Core
                 return;
             }
 
-            var playersPositioned = this.PlacePlayers();
+            var playersPositioned = this.SetPlayersPositioning();
 
             this.IsRunning = true;
         }
 
-        private bool PlacePlayers()
+        private bool SetPlayersPositioning()
         {
             var players = this.GetPlayers();
             foreach (var p in players)
@@ -68,6 +68,17 @@ namespace Gurnet.Core
         public void SetScenario(Scenario scenario)
         {
             this.Scenario = scenario;
+        }
+
+        public void Stop()
+        {
+            this.ResetPlayersPositioning();
+            this.IsRunning = false;
+        }
+
+        private void ResetPlayersPositioning()
+        {
+            this.GetPlayers().ForEach((p) => p.MoveTo(new Position()));
         }
     }
 }

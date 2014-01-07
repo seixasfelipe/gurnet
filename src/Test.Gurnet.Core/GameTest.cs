@@ -48,22 +48,13 @@ namespace Test.Gurnet.Core
         }
 
         [TestMethod]
-        public void TestStartGameWithInsufficientPlayers()
+        public void TestStartGameWithNoPlayers()
         {
             var p1 = game.GetPlayers()[0];
+            var p2 = game.GetPlayers()[1];
             game.RemovePlayer(p1.Id);
+            game.RemovePlayer(p2.Id);
 
-            game.Start();
-
-            Assert.IsTrue(game.IsRunning);
-        }
-
-        [TestMethod]
-        public void TestStartGameHavingMinimalNumberOfPlayers()
-        {
-            Assert.IsFalse(game.IsRunning);
-
-            game.SetScenario(this.scenario);
             game.Start();
 
             Assert.IsTrue(game.IsRunning);
@@ -94,6 +85,24 @@ namespace Test.Gurnet.Core
             Assert.IsTrue(game.IsRunning);
             Assert.IsTrue(p1.Position.Equals(new Position() { X = 1, Y = 1 }));
             Assert.IsTrue(p2.Position.Equals(new Position() { X = 8, Y = 8 }));
+        }
+
+        [TestMethod]
+        public void TestStopGame()
+        {
+            game.Start();
+
+            game.Stop();
+
+            var players = game.GetPlayers();
+            var p1 = players[0];
+            var p2 = players[1];
+
+            var unsetPosition = new Position();
+
+            Assert.IsFalse(game.IsRunning);
+            Assert.IsTrue(p1.Position.Equals(unsetPosition));
+            Assert.IsTrue(p2.Position.Equals(unsetPosition));
         }
     }
 }
