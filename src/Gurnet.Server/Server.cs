@@ -20,6 +20,17 @@ namespace Gurnet.Server
         private Game game;
 
         public StatusEnum Status { get; private set; }
+        public bool IsGameRunning
+        {
+            get
+            {
+                if (this.game != null)
+                {
+                    return this.game.IsRunning;
+                }
+                return false;
+            }
+        }
 
         public GurnetServer(string serverName, int port, ILogger logger)
         {
@@ -55,7 +66,16 @@ namespace Gurnet.Server
 
         private void RunGame()
         {
-            //this.game.Start();
+            this.game = new Game();
+
+            var scenario = new Scenario(10, 10, new List<Position>()
+            {
+                new Position(1, 1),
+                new Position(8, 8)
+            });
+            this.game.SetScenario(scenario);
+
+            this.game.Start();
         }
 
         private void HandleIncomingMessages(object state)
