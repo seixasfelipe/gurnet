@@ -55,6 +55,7 @@
     <ProjectReference Include="..\Gurnet.Server\Gurnet.Server.csproj">
       <Project>{3a4a3cd3-4d5a-47a0-a63b-73e7c81415ec}</Project>
       <Name>Gurnet.Server</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\lib\lidgren\Lidgren.Network\Lidgren.Network.csproj">
       <Project>{49ba1c69-6104-41ac-a5d8-b54fa9f696e8}</Project>
       <Name>Lidgren.Network</Name>
