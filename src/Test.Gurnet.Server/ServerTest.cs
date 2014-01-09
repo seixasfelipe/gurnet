@@ -4,6 +4,9 @@ using Gurnet.Core.Log;
 using Gurnet.Server;
 using Gurnet.Server.Enums;
 using System.Threading;
+using Lidgren.Network;
+using System.Reflection;
+using Gurnet.Core.Networking;
 
 namespace Test.Gurnet.Server
 {
@@ -16,6 +19,7 @@ namespace Test.Gurnet.Server
             string name = "gurnet";
             int port = 14242;
             ILogger logger = new ConsoleLogger();
+            logger.SetContext("Server");
             GurnetServer server = new GurnetServer(name, port, logger);
 
             Assert.IsFalse(server.IsGameRunning);
@@ -28,6 +32,40 @@ namespace Test.Gurnet.Server
 
             Assert.AreEqual(StatusEnum.Running, server.Status);
             Assert.IsTrue(server.IsGameRunning);
+
+            server.Stop();
+        }
+
+        [TestMethod]
+        public void TestWhenPlayerConnectServerShouldAddHimToGame()
+        {
+            string name = "gurnet";
+            int port = 14242;
+            ILogger logger = new ConsoleLogger();
+            logger.SetContext("Server");
+            GurnetServer server = new GurnetServer(name, port, logger);
+
+            server.Start();
+
+            // TODO: Improve test to handle multiple threads correctly,
+            // maybe use asserts as callbacks
+            Thread.Sleep(1000);
+
+            string playerName = "john";
+            server.ExecuteAction(ActionType.AddPlayer, playerName);
+
+            Assert.IsFalse(true);
+        }
+
+        /// <summary>
+        /// Helper method
+        /// </summary>
+        private NetIncomingMessage CreateIncomingMessage(byte[] fromData, int bitLength)
+        {
+            NetIncomingMessage inc = (NetIncomingMessage)Activator.CreateInstance(typeof(NetIncomingMessage), true);
+            typeof(NetIncomingMessage).GetField("m_data", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(inc, fromData);
+            typeof(NetIncomingMessage).GetField("m_bitLength", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(inc, bitLength);
+            return inc;
         }
     }
 }

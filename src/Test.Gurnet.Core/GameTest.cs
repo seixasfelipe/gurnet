@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Gurnet.Core;
 using System.Collections.Generic;
+using Gurnet.Core.Log;
 
 namespace Test.Gurnet.Core
 {
@@ -14,12 +15,14 @@ namespace Test.Gurnet.Core
         [TestInitialize]
         public void BeforeEach()
         {
+            var logger = new ConsoleLogger();
+            logger.SetContext("Game");
             var respawnPositions = new List<Position>() { 
                 new Position() { X = 1, Y = 1 }, 
                 new Position() { X = 8, Y = 8 }
             };
             this.scenario = new Scenario(10, 10, respawnPositions);
-            this.game = new Game();
+            this.game = new Game(logger);
             game.SetScenario(scenario);
             game.AddPlayer("john");
             game.AddPlayer("moe");

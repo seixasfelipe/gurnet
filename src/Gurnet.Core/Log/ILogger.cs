@@ -10,5 +10,7 @@ namespace Gurnet.Core.Log
     {
         void Log(string message);
         void Log(string message, params object[] args);
+
+        void SetContext(string contextName);
     }
 }

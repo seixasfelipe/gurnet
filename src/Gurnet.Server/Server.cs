@@ -18,6 +18,7 @@ namespace Gurnet.Server
         private ILogger logger;
         private Thread gameThread;
         private Game game;
+        private NetServer serverInstance;
 
         public StatusEnum Status { get; private set; }
         public bool IsGameRunning
@@ -41,19 +42,21 @@ namespace Gurnet.Server
             if (SynchronizationContext.Current == null)
             {
                 SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
-            }   
+            }
+
+            var peerConfig = new NetPeerConfiguration(this.serverName);
+            peerConfig.Port = this.port;
+
+            this.serverInstance = new NetServer(peerConfig);
+            serverInstance.RegisterReceivedCallback(new SendOrPostCallback(HandleIncomingMessages));
+
         }
 
         public void Start()
         {
             this.logger.Log("Starting server...");
 
-            var peerConfig = new NetPeerConfiguration(this.serverName);
-            peerConfig.Port = this.port;
-
-            var server = new NetServer(peerConfig);
-            server.RegisterReceivedCallback(new SendOrPostCallback(HandleIncomingMessages));
-            server.Start();
+            serverInstance.Start();
 
             this.logger.Log("Server is running...");
 
@@ -66,7 +69,7 @@ namespace Gurnet.Server
 
         private void RunGame()
         {
-            this.game = new Game();
+            this.game = new Game(this.logger);
 
             var scenario = new Scenario(10, 10, new List<Position>()
             {
@@ -115,6 +118,27 @@ namespace Gurnet.Server
                     break;
             }
             server.Recycle(inMsg);
+        }
+
+        public void ExecuteAction(Core.Networking.ActionType actionType, object obj)
+        {
+            switch (actionType)
+            {
+                case Core.Networking.ActionType.AddPlayer:
+                    var name = obj as string;
+                    this.game.AddPlayer(name);
+                    break;
+            }
+        }
+
+        public void Stop()
+        {
+            this.logger.Log("Stop server requested.");
+            
+            this.game.Stop();
+            this.serverInstance.Shutdown("Server Shutdown requested.");
+
+            this.logger.Log("Server has stopped.");
         }
     }
 }
