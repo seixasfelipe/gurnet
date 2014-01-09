@@ -21,7 +21,7 @@ namespace Gurnet.Core
             this.lastUsedRespawnPositionIndex = -1;
         }
 
-        internal Position GetNextRespawnPosition()
+        public Position GetNextRespawnPosition()
         {
             this.lastUsedRespawnPositionIndex = ++lastUsedRespawnPositionIndex;
             if(lastUsedRespawnPositionIndex == this.respawnPositions.Count) 
