@@ -21,6 +21,7 @@ namespace Test.Gurnet.Core
 
             Assert.AreEqual(expectedFirstPosition, scenario.GetNextRespawnPosition());
             Assert.AreEqual(expectedSecondPosition, scenario.GetNextRespawnPosition());
+            Assert.AreEqual(expectedFirstPosition, scenario.GetNextRespawnPosition());
         }
     }
 }
