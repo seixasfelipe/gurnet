@@ -19,6 +19,15 @@ namespace Test.Gurnet.Core
         }
 
         [TestMethod]
+        public void TestConstructorParams()
+        {
+            Position position = new Position(1, 10);
+            Assert.IsNotNull(position);
+            Assert.AreEqual(position.X, 1);
+            Assert.AreEqual(position.Y, 10);
+        }
+
+        [TestMethod]
         public void TestXProperty()
         {
             Position position = new Position { X = 1 };
@@ -30,6 +39,15 @@ namespace Test.Gurnet.Core
         {
             Position position = new Position { Y = 1 };
             Assert.AreEqual(1, position.Y);
+        }
+
+        [TestMethod]
+        public void TestEquals()
+        {
+            Position firstPosition = new Position { X = 10, Y = 20 };
+            Position secondPosition = new Position { X = 10, Y = 20 };
+
+            Assert.IsTrue(firstPosition.Equals(secondPosition));
         }
     }
 }
