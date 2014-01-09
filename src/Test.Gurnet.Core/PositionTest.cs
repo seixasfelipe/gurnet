@@ -49,5 +49,12 @@ namespace Test.Gurnet.Core
 
             Assert.IsTrue(firstPosition.Equals(secondPosition));
         }
+
+        [TestMethod]
+        public void TestGetHashCode()
+        {
+            Position position = new Position { X = 10, Y = 20 };
+            Assert.AreEqual(2530, position.GetHashCode());
+        }
     }
 }
