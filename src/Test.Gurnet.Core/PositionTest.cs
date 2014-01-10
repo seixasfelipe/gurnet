@@ -16,6 +16,8 @@ namespace Test.Gurnet.Core
         {
             Position position = new Position();
             Assert.IsNotNull(position);
+            Assert.AreEqual(position.X, -1);
+            Assert.AreEqual(position.Y, -1);
         }
 
         [TestMethod]
