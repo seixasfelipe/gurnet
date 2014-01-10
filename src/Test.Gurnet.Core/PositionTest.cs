@@ -28,20 +28,6 @@ namespace Test.Gurnet.Core
         }
 
         [TestMethod]
-        public void TestXProperty()
-        {
-            Position position = new Position { X = 1 };
-            Assert.AreEqual(1, position.X);
-        }
-
-        [TestMethod]
-        public void TestYProperty()
-        {
-            Position position = new Position { Y = 1 };
-            Assert.AreEqual(1, position.Y);
-        }
-
-        [TestMethod]
         public void TestEquals()
         {
             Position firstPosition = new Position { X = 10, Y = 20 };
