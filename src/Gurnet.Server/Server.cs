@@ -20,6 +20,7 @@ namespace Gurnet.Server
         private Game game;
         private NetServer serverInstance;
 
+        public List<string> ConnectedClients { get; private set; }
         public StatusEnum Status { get; private set; }
         public bool IsGameRunning
         {
@@ -38,6 +39,7 @@ namespace Gurnet.Server
             this.serverName = serverName;
             this.port = port;
             this.logger = logger;
+            this.ConnectedClients = new List<string>();
 
             if (SynchronizationContext.Current == null)
             {
@@ -118,6 +120,23 @@ namespace Gurnet.Server
                     break;
             }
             server.Recycle(inMsg);
+        }
+
+        public void ProcessIncomingMessage(NetIncomingMessage incMsg)
+        {
+            switch (incMsg.MessageType)
+            {
+                case NetIncomingMessageType.StatusChanged:
+                    {
+                        NetConnectionStatus status = (NetConnectionStatus)incMsg.ReadByte();
+                        if (status == NetConnectionStatus.Connected)
+                        {
+                            this.ConnectedClients.Add("client1");
+                        }
+                        break;
+                    }
+            }
+
         }
 
         public void ExecuteAction(Core.Networking.ActionType actionType, object obj)

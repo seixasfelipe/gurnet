@@ -13,48 +13,71 @@ namespace Test.Gurnet.Server
     [TestClass]
     public class ServerTest
     {
+        //[TestMethod]
+        //public void TestServerStartAlsoStartsTheGame()
+        //{
+        //    string name = "gurnet";
+        //    int port = 14242;
+        //    ILogger logger = new ConsoleLogger();
+        //    logger.SetContext("Server");
+        //    GurnetServer server = new GurnetServer(name, port, logger);
+
+        //    Assert.IsFalse(server.IsGameRunning);
+
+        //    server.Start();
+
+        //    // TODO: Improve test to handle multiple threads correctly,
+        //    // maybe use asserts as callbacks
+        //    Thread.Sleep(1000);
+
+        //    Assert.AreEqual(StatusEnum.Running, server.Status);
+        //    Assert.IsTrue(server.IsGameRunning);
+
+        //    server.Stop();
+        //}
+
+        //[TestMethod]
+        //public void TestWhenPlayerConnectServerShouldAddHimToGame()
+        //{
+        //    string name = "gurnet";
+        //    int port = 14242;
+        //    ILogger logger = new ConsoleLogger();
+        //    logger.SetContext("Server");
+        //    GurnetServer server = new GurnetServer(name, port, logger);
+
+        //    server.Start();
+
+        //    // TODO: Improve test to handle multiple threads correctly,
+        //    // maybe use asserts as callbacks
+        //    Thread.Sleep(1000);
+
+        //    string playerName = "john";
+        //    server.ExecuteAction(ActionType.AddPlayer, playerName);
+
+        //    Assert.IsFalse(true);
+
+        //    server.Stop();
+        //}
+
         [TestMethod]
-        public void TestServerStartAlsoStartsTheGame()
+        public void TestThatServerKeepsTrackOfEveryClientThatConnectToServer()
         {
             string name = "gurnet";
             int port = 14242;
             ILogger logger = new ConsoleLogger();
             logger.SetContext("Server");
             GurnetServer server = new GurnetServer(name, port, logger);
+            
+            var client = new NetClient(new NetPeerConfiguration("gurnet"));
+            var msg = client.CreateMessage(NetConnectionStatus.Connected.ToString());
 
-            Assert.IsFalse(server.IsGameRunning);
-
-            server.Start();
-
-            // TODO: Improve test to handle multiple threads correctly,
-            // maybe use asserts as callbacks
-            Thread.Sleep(1000);
-
-            Assert.AreEqual(StatusEnum.Running, server.Status);
-            Assert.IsTrue(server.IsGameRunning);
-
-            server.Stop();
-        }
-
-        [TestMethod]
-        public void TestWhenPlayerConnectServerShouldAddHimToGame()
-        {
-            string name = "gurnet";
-            int port = 14242;
-            ILogger logger = new ConsoleLogger();
-            logger.SetContext("Server");
-            GurnetServer server = new GurnetServer(name, port, logger);
+            var incMsg = CreateIncomingMessage(msg.Data, msg.LengthBits);
 
             server.Start();
 
-            // TODO: Improve test to handle multiple threads correctly,
-            // maybe use asserts as callbacks
-            Thread.Sleep(1000);
+            server.ProcessIncomingMessage(incMsg);
 
-            string playerName = "john";
-            server.ExecuteAction(ActionType.AddPlayer, playerName);
-
-            Assert.IsFalse(true);
+            Assert.AreEqual(1, server.ConnectedClients.Count);
         }
 
         /// <summary>
