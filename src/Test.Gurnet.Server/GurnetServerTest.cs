@@ -11,7 +11,7 @@ using Gurnet.Core.Networking;
 namespace Test.Gurnet.Server
 {
     [TestClass]
-    public class ServerTest
+    public class GurnetServerTest
     {
         //[TestMethod]
         //public void TestServerStartAlsoStartsTheGame()
