@@ -13,15 +13,30 @@ namespace Test.Gurnet.Server
     [TestClass]
     public class GurnetServerTest
     {
-        private GurnetServer GetsNewGurnetServer()
+        sealed class MockMessageProcessor: IMessageProcessor
         {
-            string name = "gurnet";
-            int port = 14242;
+            public string Message { get; set; }
+            public int MessageBits { get; set; }
 
-            ILogger logger = new ConsoleLogger();
-            logger.SetContext("Server");
+            public void ProcessIncomingMessage(NetIncomingMessage incMsg)
+            {
+                if (incMsg == null)
+                    throw new ArgumentNullException("incMsg cannot be null");
+
+                MessageBits = incMsg.LengthBits;
+                Message = Encoding.UTF8.GetString(incMsg.Data, 0, incMsg.Data.Length);
+            }
+        }
+
+        private GurnetServer GetsNewGurnetServer(ILogger logger, IMessageProcessor processor, string name = "gurnet", int port = 14242)
+        {
+            if (logger == null)
+            {
+                logger = new ConsoleLogger();
+                logger.SetContext("Server");
+            }
             
-            GurnetServer server = new GurnetServer(name, port, logger);
+            GurnetServer server = new GurnetServer(name, port, logger, processor);
             
             return server;
         }
