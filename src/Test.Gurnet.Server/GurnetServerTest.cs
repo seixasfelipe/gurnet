@@ -13,6 +13,18 @@ namespace Test.Gurnet.Server
     [TestClass]
     public class GurnetServerTest
     {
+        private GurnetServer GetsNewGurnetServer()
+        {
+            string name = "gurnet";
+            int port = 14242;
+
+            ILogger logger = new ConsoleLogger();
+            logger.SetContext("Server");
+            
+            GurnetServer server = new GurnetServer(name, port, logger);
+            
+            return server;
+        }
         //[TestMethod]
         //public void TestServerStartAlsoStartsTheGame()
         //{
@@ -62,11 +74,7 @@ namespace Test.Gurnet.Server
         [TestMethod]
         public void TestThatServerKeepsTrackOfEveryClientThatConnectToServer()
         {
-            string name = "gurnet";
-            int port = 14242;
-            ILogger logger = new ConsoleLogger();
-            logger.SetContext("Server");
-            GurnetServer server = new GurnetServer(name, port, logger);
+            GurnetServer server = GetsNewGurnetServer();
             
             var client = new NetClient(new NetPeerConfiguration("gurnet"));
             var msg = client.CreateMessage(NetConnectionStatus.Connected.ToString());
