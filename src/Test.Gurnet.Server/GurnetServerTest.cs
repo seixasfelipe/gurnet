@@ -35,7 +35,7 @@ namespace Test.Gurnet.Server
             {
                 logger = new ConsoleLogger();
                 logger.SetContext("Server");
-            }
+            } 
             
             GurnetServer server = new GurnetServer(name, port, logger, processor);
             
