@@ -128,11 +128,7 @@ namespace Gurnet.Server
             {
                 case NetIncomingMessageType.StatusChanged:
                     {
-                        NetConnectionStatus status = (NetConnectionStatus)incMsg.ReadByte();
-                        if (status == NetConnectionStatus.Connected)
-                        {
                             this.ConnectedClients.Add("client1");
-                        }
                         break;
                     }
             }
