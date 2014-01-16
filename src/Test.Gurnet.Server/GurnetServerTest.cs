@@ -7,6 +7,7 @@ using System.Threading;
 using Lidgren.Network;
 using System.Reflection;
 using Gurnet.Core.Networking;
+using System.Text;
 
 namespace Test.Gurnet.Server
 {
@@ -87,20 +88,18 @@ namespace Test.Gurnet.Server
         //}
 
         [TestMethod]
-        public void TestThatServerKeepsTrackOfEveryClientThatConnectToServer()
+        public void TestProcessIncomingMessage()
         {
-            GurnetServer server = GetsNewGurnetServer();
-            
-            var client = new NetClient(new NetPeerConfiguration("gurnet"));
-            var msg = client.CreateMessage(NetConnectionStatus.Connected.ToString());
+            GurnetServer server = GetsNewGurnetServer(null, new MockMessageProcessor());
 
-            var incMsg = CreateIncomingMessage(msg.Data, msg.LengthBits);
+            string expectedMessage = "this is the message";
 
-            server.Start();
+            byte[] messageByte = Encoding.UTF8.GetBytes(expectedMessage);
 
-            server.ProcessIncomingMessage(incMsg);
+            server.ProcessIncomingMessage(CreateIncomingMessage(messageByte, messageByte.Length));
 
-            Assert.AreEqual(1, server.ConnectedClients.Count);
+            Assert.AreEqual(expectedMessage, (server.messageProcessor as MockMessageProcessor).Message);
+            Assert.AreEqual(messageByte.Length, (server.messageProcessor as MockMessageProcessor).MessageBits);
         }
 
         /// <summary>
