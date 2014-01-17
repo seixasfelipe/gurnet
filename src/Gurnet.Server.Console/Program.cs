@@ -27,7 +27,7 @@ namespace Gurnet.Server
             string name = "gurnet";
             ILogger logger = new ConsoleLogger();
             logger.SetContext("Server");
-            GurnetServer server = new GurnetServer(name, port, logger);
+            GurnetServer server = new GurnetServer(name, port, logger, null);
             
             server.Start();
 

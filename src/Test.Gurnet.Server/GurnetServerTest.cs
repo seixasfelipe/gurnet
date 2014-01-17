@@ -7,12 +7,40 @@ using System.Threading;
 using Lidgren.Network;
 using System.Reflection;
 using Gurnet.Core.Networking;
+using System.Text;
 
 namespace Test.Gurnet.Server
 {
     [TestClass]
-    public class ServerTest
+    public class GurnetServerTest
     {
+        sealed class MockMessageProcessor: IMessageProcessor
+        {
+            public string Message { get; set; }
+            public int MessageBits { get; set; }
+
+            public void ProcessIncomingMessage(NetIncomingMessage incMsg)
+            {
+                if (incMsg == null)
+                    throw new ArgumentNullException("incMsg cannot be null");
+
+                MessageBits = incMsg.LengthBits;
+                Message = Encoding.UTF8.GetString(incMsg.Data, 0, incMsg.Data.Length);
+            }
+        }
+
+        private GurnetServer GetsNewGurnetServer(ILogger logger, IMessageProcessor processor, string name = "gurnet", int port = 14242)
+        {
+            if (logger == null)
+            {
+                logger = new ConsoleLogger();
+                logger.SetContext("Server");
+            } 
+            
+            GurnetServer server = new GurnetServer(name, port, logger, processor);
+            
+            return server;
+        }
         //[TestMethod]
         //public void TestServerStartAlsoStartsTheGame()
         //{
@@ -60,32 +88,27 @@ namespace Test.Gurnet.Server
         //}
 
         [TestMethod]
-        public void TestThatServerKeepsTrackOfEveryClientThatConnectToServer()
+        public void TestProcessIncomingMessage()
         {
-            string name = "gurnet";
-            int port = 14242;
-            ILogger logger = new ConsoleLogger();
-            logger.SetContext("Server");
-            GurnetServer server = new GurnetServer(name, port, logger);
-            
-            var client = new NetClient(new NetPeerConfiguration("gurnet"));
-            var msg = client.CreateMessage(NetConnectionStatus.Connected.ToString());
+            GurnetServer server = GetsNewGurnetServer(null, new MockMessageProcessor());
 
-            var incMsg = CreateIncomingMessage(msg.Data, msg.LengthBits);
+            string expectedMessage = "this is the message";
 
-            server.Start();
+            byte[] messageByte = Encoding.UTF8.GetBytes(expectedMessage);
 
-            server.ProcessIncomingMessage(incMsg);
+            server.ProcessIncomingMessage(CreateIncomingMessage(messageByte, messageByte.Length));
 
-            Assert.AreEqual(1, server.ConnectedClients.Count);
+            Assert.AreEqual(expectedMessage, (server.messageProcessor as MockMessageProcessor).Message);
+            Assert.AreEqual(messageByte.Length, (server.messageProcessor as MockMessageProcessor).MessageBits);
         }
 
         /// <summary>
         /// Helper method
         /// </summary>
-        private NetIncomingMessage CreateIncomingMessage(byte[] fromData, int bitLength)
+        private NetIncomingMessage CreateIncomingMessage(byte[] fromData, int bitLength, NetIncomingMessageType messageType = NetIncomingMessageType.StatusChanged)
         {
             NetIncomingMessage inc = (NetIncomingMessage)Activator.CreateInstance(typeof(NetIncomingMessage), true);
+            typeof(NetIncomingMessage).GetField("m_incomingMessageType", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(inc, messageType);
             typeof(NetIncomingMessage).GetField("m_data", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(inc, fromData);
             typeof(NetIncomingMessage).GetField("m_bitLength", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(inc, bitLength);
             return inc;

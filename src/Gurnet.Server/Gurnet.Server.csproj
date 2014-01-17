@@ -40,7 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\StatusEnum.cs" />
-    <Compile Include="Server.cs" />
+    <Compile Include="GurnetServer.cs" />
+    <Compile Include="IMessageProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

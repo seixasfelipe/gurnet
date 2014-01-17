@@ -19,6 +19,7 @@ namespace Gurnet.Server
         private Thread gameThread;
         private Game game;
         private NetServer serverInstance;
+        public IMessageProcessor messageProcessor { get; private set; }
 
         public List<string> ConnectedClients { get; private set; }
         public StatusEnum Status { get; private set; }
@@ -34,12 +35,13 @@ namespace Gurnet.Server
             }
         }
 
-        public GurnetServer(string serverName, int port, ILogger logger)
+        public GurnetServer(string serverName, int port, ILogger logger, IMessageProcessor processor)
         {
             this.serverName = serverName;
             this.port = port;
             this.logger = logger;
             this.ConnectedClients = new List<string>();
+            this.messageProcessor = processor;
 
             if (SynchronizationContext.Current == null)
             {
@@ -124,18 +126,10 @@ namespace Gurnet.Server
 
         public void ProcessIncomingMessage(NetIncomingMessage incMsg)
         {
-            switch (incMsg.MessageType)
-            {
-                case NetIncomingMessageType.StatusChanged:
-                    {
-                        NetConnectionStatus status = (NetConnectionStatus)incMsg.ReadByte();
-                        if (status == NetConnectionStatus.Connected)
-                        {
-                            this.ConnectedClients.Add("client1");
-                        }
-                        break;
-                    }
-            }
+            if (messageProcessor == null)
+                return;
+
+            messageProcessor.ProcessIncomingMessage(incMsg);
 
         }
 
