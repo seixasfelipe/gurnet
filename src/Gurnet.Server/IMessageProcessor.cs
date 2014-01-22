@@ -9,6 +9,6 @@ namespace Gurnet.Server
 {
     public interface IMessageProcessor
     {
-        void ProcessIncomingMessage(NetIncomingMessage incMsg);
+        void ProcessIncomingMessage(NetIncomingMessage incMsg, IMessageTranslator translator);
     }
 }

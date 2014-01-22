@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gurnet.Core.Networking
+namespace Gurnet.Server
 {
-    public enum ActionType
+    public interface IMessageTranslator
     {
-        AddPlayer
+        void TranslateMessage(string stringMessage);
     }
 }

@@ -19,7 +19,8 @@ namespace Gurnet.Server
         private Thread gameThread;
         private Game game;
         private NetServer serverInstance;
-        public IMessageProcessor messageProcessor { get; private set; }
+        public IMessageProcessor MessageProcessor { get; private set; }
+        public IMessageTranslator MessageTranslator { get; private set; }
 
         public List<string> ConnectedClients { get; private set; }
         public StatusEnum Status { get; private set; }
@@ -35,13 +36,14 @@ namespace Gurnet.Server
             }
         }
 
-        public GurnetServer(string serverName, int port, ILogger logger, IMessageProcessor processor)
+        public GurnetServer(string serverName, int port, ILogger logger, IMessageProcessor processor, IMessageTranslator translator)
         {
             this.serverName = serverName;
             this.port = port;
             this.logger = logger;
             this.ConnectedClients = new List<string>();
-            this.messageProcessor = processor;
+            this.MessageProcessor = processor;
+            this.MessageTranslator = translator;
 
             if (SynchronizationContext.Current == null)
             {
@@ -126,18 +128,17 @@ namespace Gurnet.Server
 
         public void ProcessIncomingMessage(NetIncomingMessage incMsg)
         {
-            if (messageProcessor == null)
+            if (MessageProcessor == null)
                 return;
 
-            messageProcessor.ProcessIncomingMessage(incMsg);
-
+            MessageProcessor.ProcessIncomingMessage(incMsg, MessageTranslator);
         }
 
-        public void ExecuteAction(Core.Networking.ActionType actionType, object obj)
+        public void ExecuteAction(Core.Networking.PacketType actionType, object obj)
         {
             switch (actionType)
             {
-                case Core.Networking.ActionType.AddPlayer:
+                case Core.Networking.PacketType.AddPlayer:
                     var name = obj as string;
                     this.game.AddPlayer(name);
                     break;
