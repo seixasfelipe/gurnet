@@ -71,51 +71,6 @@ namespace Test.Gurnet.Server
             
             return server;
         }
-        //[TestMethod]
-        //public void TestServerStartAlsoStartsTheGame()
-        //{
-        //    string name = "gurnet";
-        //    int port = 14242;
-        //    ILogger logger = new ConsoleLogger();
-        //    logger.SetContext("Server");
-        //    GurnetServer server = new GurnetServer(name, port, logger);
-
-        //    Assert.IsFalse(server.IsGameRunning);
-
-        //    server.Start();
-
-        //    // TODO: Improve test to handle multiple threads correctly,
-        //    // maybe use asserts as callbacks
-        //    Thread.Sleep(1000);
-
-        //    Assert.AreEqual(StatusEnum.Running, server.Status);
-        //    Assert.IsTrue(server.IsGameRunning);
-
-        //    server.Stop();
-        //}
-
-        //[TestMethod]
-        //public void TestWhenPlayerConnectServerShouldAddHimToGame()
-        //{
-        //    string name = "gurnet";
-        //    int port = 14242;
-        //    ILogger logger = new ConsoleLogger();
-        //    logger.SetContext("Server");
-        //    GurnetServer server = new GurnetServer(name, port, logger);
-
-        //    server.Start();
-
-        //    // TODO: Improve test to handle multiple threads correctly,
-        //    // maybe use asserts as callbacks
-        //    Thread.Sleep(1000);
-
-        //    string playerName = "john";
-        //    server.ExecuteAction(ActionType.AddPlayer, playerName);
-
-        //    Assert.IsFalse(true);
-
-        //    server.Stop();
-        //}
 
         [TestMethod]
         public void TestProcessIncomingMessage()
