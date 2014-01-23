@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Gurnet.Core.Networking
 {
-    public enum PacketType : byte
+    public enum ActionType : byte
     {
         AddPlayer = 1
     }

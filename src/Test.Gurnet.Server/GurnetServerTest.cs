@@ -16,8 +16,8 @@ namespace Test.Gurnet.Server
     {
         sealed class MockMessageTranslator : IMessageTranslator
         {
-            public PacketType PacketType { get; private set; }
-            public object PacketContent { get; private set; }
+            public ActionType ActionType { get; private set; }
+            public object Data { get; private set; }
 
             public void TranslateMessage(string stringMessage)
             {
@@ -28,8 +28,8 @@ namespace Test.Gurnet.Server
                     byte packetTypeByte;
                     byte.TryParse(parts[0], out packetTypeByte);
 
-                    PacketType = (PacketType)packetTypeByte;
-                    PacketContent = (object)parts[1];
+                    ActionType = (ActionType)packetTypeByte;
+                    Data = (object)parts[1];
                 }
                 
             }
@@ -144,8 +144,8 @@ namespace Test.Gurnet.Server
             server.ProcessIncomingMessage(incMsg);
 
             var translator = server.MessageTranslator as MockMessageTranslator;
-            Assert.AreEqual(PacketType.AddPlayer, translator.PacketType);
-            Assert.AreEqual("john", (string)translator.PacketContent);
+            Assert.AreEqual(ActionType.AddPlayer, translator.ActionType);
+            Assert.AreEqual("john", (string)translator.Data);
         }
 
         /// <summary>

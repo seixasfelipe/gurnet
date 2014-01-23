@@ -134,12 +134,12 @@ namespace Gurnet.Server
             MessageProcessor.ProcessIncomingMessage(incMsg, MessageTranslator);
         }
 
-        public void ExecuteAction(Core.Networking.PacketType actionType, object obj)
+        public void ResolveAction(Core.Networking.ActionType actionType, object data)
         {
             switch (actionType)
             {
-                case Core.Networking.PacketType.AddPlayer:
-                    var name = obj as string;
+                case Core.Networking.ActionType.AddPlayer:
+                    var name = data as string;
                     this.game.AddPlayer(name);
                     break;
             }
